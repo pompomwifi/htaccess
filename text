@@ -4,7 +4,7 @@ text/x-generic .htaccess ( ASCII text )
 <FilesMatch "\.(php4|php5|php3|php2|php|phtml)$">
 SetHandler application/x-lsphp72
 </FilesMatch>
-lsapi_phpini /home/aiwedtzc/public_html/php.ini
+lsapi_phpini /home/account_name/public_html/php.ini
 
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
@@ -20,13 +20,13 @@ RewriteRule . /index.php [L]
 
 # Redirect from WWW to non-WWW
 RewriteEngine On
-RewriteCond %{HTTP_HOST} ^www\.aiwesh\.com [NC]
-RewriteRule (.*) http://aiwesh.com/$1 [R=301,L]
+RewriteCond %{HTTP_HOST} ^www\.site\.com [NC]
+RewriteRule (.*) http://site.com/$1 [R=301,L]
 
 # Redirect from HTTP to HTTPS
 RewriteEngine On
 RewriteCond %{HTTPS} !=on
-RewriteRule .* https://aiwesh.com/%{REQUEST_URI} [R,L]
+RewriteRule .* https://site.com/%{REQUEST_URI} [R,L]
 
 # Redirect Robots.txt Requests
 <IfModule mod_alias.c>
@@ -60,7 +60,7 @@ Satisfy All
 </IfModule>
 
 # trackback fixes
-RedirectMatch 301 (?i)^(.+)/trackback/?.*$ https://aiwesh.com$1
+RedirectMatch 301 (?i)^(.+)/trackback/?.*$ https://site.com$1
 
 # Secure Uploads Folder
 RemoveHandler .ini .sh .bsh .bash .awk .nawk .gawk .csh .var .c .in .h .asc .md5 .sha .sha1 .cgi .pl .php .inc .asp .exe .bin .py .pl .phtml
