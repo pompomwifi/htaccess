@@ -1,0 +1,126 @@
+
+text/x-generic .htaccess ( ASCII text )
+
+<FilesMatch "\.(php4|php5|php3|php2|php|phtml)$">
+SetHandler application/x-lsphp72
+</FilesMatch>
+lsapi_phpini /home/aiwedtzc/public_html/php.ini
+
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+
+# END WordPress
+
+# Redirect from WWW to non-WWW
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^www\.aiwesh\.com [NC]
+RewriteRule (.*) http://aiwesh.com/$1 [R=301,L]
+
+# Redirect from HTTP to HTTPS
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule .* https://aiwesh.com/%{REQUEST_URI} [R,L]
+
+# Redirect Robots.txt Requests
+<IfModule mod_alias.c>
+	RedirectMatch 301 (?<!^)/robots.txt$ /robots.txt
+</IfModule>
+
+# <Files wp-config.php>
+# order allow,deny
+# deny from all
+# Allow from localhost
+# Satisfy All
+# </Files>
+
+# <Files wp-cron.php>
+# order allow,deny
+# deny from all
+# Allow from localhost
+# Satisfy All
+# </Files>
+
+<Files xmlrpc.php>
+order allow,deny
+deny from all
+Allow from localhost
+Satisfy All
+</Files>
+
+# PROTECT xmlrpc.php
+<IfModule mod_alias.c>
+	RedirectMatch 403 (?i)/xmlrpc\.php
+</IfModule>
+
+# trackback fixes
+RedirectMatch 301 (?i)^(.+)/trackback/?.*$ https://aiwesh.com$1
+
+# Secure Uploads Folder
+RemoveHandler .ini .sh .bsh .bash .awk .nawk .gawk .csh .var .c .in .h .asc .md5 .sha .sha1 .cgi .pl .php .inc .asp .exe .bin .py .pl .phtml
+RemoveHandler .out .output .overlay .p12 .p5c .pam .pas .patch .phps .php5 .php4 .php3 .pbxproj .pdb .pdf .pem .perl .phar .php .php_cs .phpize .phpt .pingpong .pipelining .pk
+
+# forcing them to be interpreted by Apache as plain text
+<FilesMatch "\.(ini|sh|bsh|bash|awk|nawk|gawk|csh|var|c|in|h|asc|md5|sha|sha1|cgi|pl|php|php*|py|inc|asp|exe|bin|list|py|rb|phtml|tag|info|txt)$">
+ForceType text/plain
+</FilesMatch>
+
+# Block obvious Spam
+RewriteCond %{THE_REQUEST} ^POST\ /wp-login.php\ HTTP/1\.0 [NC]
+RewriteRule .* - [F]
+
+# Block Logins with empty User Agent
+RewriteCond %{THE_REQUEST} ^POST.*wp-login [NC]
+RewriteCond %{HTTP_USER_AGENT} ^$
+RewriteRule .* - [F]
+
+# require HTTP 1.1 for POST
+<IfModule mod_rewrite.c>
+	RewriteCond %{THE_REQUEST} ^POST(.*)HTTP/(0\.9|1\.0)$ [NC]
+	RewriteRule .* - [F,L]
+</IfModule>
+
+# Protect from sql injection
+Options +FollowSymLinks
+RewriteEngine On
+RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2})
+RewriteRule ^(.*)$ index.php [F,L]
+
+# Block Bad Referrers, Bad Hosts and User Agents
+<IfModule mod_rewrite.c>
+	RewriteCond %{HTTP_REFERER} soprotivlenie [NC]
+	RewriteCond %{HTTP_HOST} (.*)reverse\.softlayer\.com(.*) [NC,OR]
+	RewriteCond %{HTTP_HOST} (.*)\.crimea\.com(.*) [NC,OR]
+	RewriteCond %{HTTP_HOST} (.*)kanagawa\.ocn(.*) [NC,OR]
+	RewriteCond %{HTTP_USER_AGENT} QuerySeekerSpider [NC,OR]
+	RewriteCond %{HTTP_USER_AGENT} undefined [NC,OR]
+	RewriteCond %{HTTP_USER_AGENT} siclab [NC]
+	RewriteRule .* - [F,L]
+</IfModule>
+
+# Block POST for User Agent
+<IfModule mod_rewrite.c>
+	RewriteCond %{REQUEST_METHOD} POST
+	RewriteCond %{HTTP_USER_AGENT} Super_Spam_Sucker [NC]
+	RewriteRule .* - [F,L]
+</IfModule>
+
+# BLOCK IDIOT REQUESTS
+<IfModule mod_alias.c>
+	RedirectMatch 403 router\.php
+	RedirectMatch 403 /\)\.html\(
+</IfModule>
+
+# BLOCK IDIOT REQUESTS
+<IfModule mod_rewrite.c>
+	RewriteCond %{QUERY_STRING} http\:\/\/www\.google\.com\/humans\.txt\? [NC]
+	RewriteRule .* - [F,L]
+</IfModule>
